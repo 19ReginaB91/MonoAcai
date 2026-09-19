@@ -1,11 +1,732 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MONO — Açaí in Wesel · Maket mit Regie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --acai: #3a0d4a;
+      --acai-deep: #16051c;
+      --berry: #6b1d7a;
+      --orchid: #c084fc;
+      --cream: #f4eadc;
+      --foam: #fff7ee;
+      --mango: #f2b84b;
+      --kiwi: #8fbf5a;
+      --berry-red: #c23b5e;
+      --ink: #1a0e16;
+      --mute: rgba(244, 234, 220, 0.62);
+      --shot: 0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    html, body { min-height: 100%; }
+    body {
+      font-family: Syne, sans-serif;
+      background: var(--acai-deep);
+      color: var(--cream);
+      overflow-x: hidden;
+    }
+
+    .grain {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      opacity: 0.09;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    /* chrome */
+    .topbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 18px 28px;
+      mix-blend-mode: difference;
+    }
+    .brand {
+      font-weight: 800;
+      letter-spacing: 0.28em;
+      font-size: 13px;
+    }
+    .reel {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+    }
+    .reel a {
+      width: 28px; height: 28px;
+      border: 1px solid rgba(244,234,220,.45);
+      border-radius: 999px;
+      display: grid; place-items: center;
+      font-size: 10px;
+      color: var(--cream);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+    }
+    .reel a.active {
+      background: var(--cream);
+      color: var(--acai-deep);
+      border-color: var(--cream);
+    }
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    .chip {
+      border: 1px solid rgba(244,234,220,.4);
+      background: transparent;
+      color: var(--cream);
+      font: inherit;
+      font-size: 11px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+    .chip.on { background: var(--cream); color: var(--acai-deep); }
+
+    .timeline {
+      position: fixed;
+      top: 0; left: 0; height: 2px;
+      width: 0;
+      background: linear-gradient(90deg, var(--mango), var(--orchid));
+      z-index: 60;
+    }
+
+    /* director slate */
+    .slate {
+      position: fixed;
+      top: 78px;
+      right: 22px;
+      width: min(340px, calc(100vw - 32px));
+      z-index: 55;
+      background: rgba(22, 5, 28, 0.88);
+      border: 1px solid rgba(244,234,220,.16);
+      backdrop-filter: blur(16px);
+      padding: 18px 18px 16px;
+      transform: translateX(120%);
+      transition: transform .45s cubic-bezier(.22,1,.36,1);
+    }
+    body.directing .slate { transform: none; }
+    .slate kbd {
+      font-family: inherit;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      color: var(--mango);
+    }
+    .slate h2 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 28px;
+      font-weight: 500;
+      margin: 6px 0 10px;
+    }
+    .slate p, .slate li {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--mute);
+    }
+    .slate ul { padding-left: 16px; margin-top: 8px; }
+    .slate .beat {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(244,234,220,.12);
+    }
+
+    .stage { padding-top: 0; }
+
+    section.shot {
+      min-height: 100vh;
+      position: relative;
+      display: grid;
+      place-items: center;
+      padding: 96px 28px 72px;
+    }
+
+    .shot-tag {
+      position: absolute;
+      left: 28px;
+      top: 96px;
+      font-size: 11px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--mute);
+    }
+
+    h1, h2.display {
+      font-family: "Cormorant Garamond", serif;
+      font-weight: 500;
+    }
+
+    /* SHOT 01 title */
+    #s01 {
+      background:
+        radial-gradient(1200px 700px at 70% 20%, rgba(107,29,122,.45), transparent 55%),
+        radial-gradient(900px 600px at 20% 90%, rgba(194,59,94,.22), transparent 50%),
+        var(--acai-deep);
+      text-align: center;
+    }
+    .title-card .eyebrow {
+      letter-spacing: 0.42em;
+      font-size: 12px;
+      margin-bottom: 18px;
+      color: var(--mango);
+    }
+    .title-card h1 {
+      font-size: clamp(72px, 16vw, 188px);
+      line-height: 0.82;
+      letter-spacing: -0.03em;
+    }
+    .title-card h1 em {
+      font-style: italic;
+      display: block;
+      font-size: 0.38em;
+      letter-spacing: 0.08em;
+      margin-top: 12px;
+      color: var(--orchid);
+    }
+    .title-card .logline {
+      max-width: 420px;
+      margin: 28px auto 0;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--mute);
+    }
+
+    /* SHOT 02 arrival */
+    #s02 {
+      background: linear-gradient(180deg, #1c0824 0%, #2a1034 100%);
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 48px;
+      align-items: center;
+      text-align: left;
+    }
+    .copy h2.display {
+      font-size: clamp(42px, 6vw, 78px);
+      line-height: 0.95;
+    }
+    .copy p { margin-top: 18px; max-width: 420px; color: var(--mute); line-height: 1.65; }
+    .meta-row {
+      display: flex; gap: 28px; margin-top: 28px; flex-wrap: wrap;
+    }
+    .meta-row b { display: block; font-size: 12px; letter-spacing: 0.16em; color: var(--mango); font-weight: 600; }
+    .meta-row span { font-size: 14px; color: var(--cream); }
+
+    .facade {
+      aspect-ratio: 4/5;
+      background:
+        linear-gradient(180deg, rgba(22,5,28,.15), rgba(22,5,28,.55)),
+        radial-gradient(circle at 50% 38%, #7a2d8c 0%, #3a0d4a 42%, #120410 100%);
+      border-radius: 4px 4px 40px 4px;
+      position: relative;
+      overflow: hidden;
+      min-height: 420px;
+    }
+    .facade::before {
+      content: "";
+      position: absolute;
+      inset: 12% 18% 38%;
+      background: linear-gradient(180deg, #f4eadc, #e8c9a0);
+      opacity: 0.12;
+      clip-path: polygon(8% 0, 92% 0, 100% 100%, 0 100%);
+    }
+    .window {
+      position: absolute;
+      left: 22%; top: 22%;
+      width: 56%; height: 28%;
+      background: linear-gradient(180deg, #f7d9a8, #c084fc 80%);
+      opacity: 0.55;
+      box-shadow: 0 0 80px 20px rgba(192,132,252,.25);
+    }
+    .sign {
+      position: absolute;
+      left: 50%; bottom: 18%;
+      transform: translateX(-50%);
+      letter-spacing: 0.4em;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    /* SHOT 03 bowl */
+    #s03 {
+      background: #120410;
+      overflow: hidden;
+    }
+    .bowl-hero {
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+    .bowl {
+      width: min(420px, 78vw);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 38% 30%, #9b4db3 0%, #4a1460 28%, #2a0836 58%, #140410 78%);
+      box-shadow:
+        0 40px 80px rgba(0,0,0,.45),
+        inset 0 -30px 40px rgba(0,0,0,.35);
+      position: relative;
+    }
+    .bowl::after {
+      content: "";
+      position: absolute;
+      inset: 14%;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 40% 35%, #c47ae0 0 8%, transparent 9%),
+        radial-gradient(circle at 62% 28%, #f2b84b 0 6%, transparent 7%),
+        radial-gradient(circle at 30% 62%, #8fbf5a 0 7%, transparent 8%),
+        radial-gradient(circle at 70% 58%, #c23b5e 0 8%, transparent 9%),
+        radial-gradient(circle at 52% 72%, #fff7ee 0 5%, transparent 6%),
+        radial-gradient(circle at 48% 48%, #5a1a6e, #2a0836 70%);
+    }
+    .orbit {
+      position: absolute;
+      inset: -8%;
+      border: 1px dashed rgba(244,234,220,.18);
+      border-radius: 50%;
+      animation: spin 48s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .caption {
+      position: absolute;
+      bottom: 8vh;
+      text-align: center;
+      letter-spacing: 0.22em;
+      font-size: 12px;
+      color: var(--mute);
+    }
+
+    /* SHOT 04 ritual */
+    #s04 {
+      background: var(--foam);
+      color: var(--ink);
+      align-content: start;
+    }
+    #s04 .shot-tag { color: #6b4a58; }
+    .ritual { width: min(1100px, 100%); }
+    .ritual h2.display { font-size: clamp(40px, 6vw, 72px); color: var(--acai); }
+    .ritual > p { color: #5c4450; max-width: 520px; margin: 12px 0 36px; line-height: 1.6; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .topping {
+      background: #fff;
+      border: 1px solid #eadfd3;
+      padding: 18px 16px 16px;
+      cursor: pointer;
+      text-align: left;
+      font: inherit;
+      color: inherit;
+      min-height: 128px;
+      transition: transform .2s, border-color .2s, background .2s;
+    }
+    .topping:hover { transform: translateY(-3px); }
+    .topping.selected {
+      background: var(--acai);
+      color: var(--cream);
+      border-color: var(--acai);
+    }
+    .dot {
+      width: 18px; height: 18px; border-radius: 50%;
+      margin-bottom: 18px;
+    }
+    .topping strong { display: block; font-size: 15px; }
+    .topping small { color: inherit; opacity: .7; font-size: 12px; }
+    .build-bar {
+      margin-top: 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .price {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 42px;
+    }
+    .cta {
+      background: var(--acai);
+      color: var(--cream);
+      border: 0;
+      padding: 16px 26px;
+      font: inherit;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    /* SHOT 05 manifesto */
+    #s05 {
+      background: var(--acai);
+      text-align: center;
+    }
+    blockquote {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(32px, 5.4vw, 68px);
+      font-style: italic;
+      max-width: 16ch;
+      line-height: 1.05;
+    }
+    .cite { margin-top: 24px; letter-spacing: 0.28em; font-size: 11px; color: var(--mango); }
+
+    /* SHOT 06 visit */
+    #s06 {
+      background: #0e0712;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+    }
+    .visit-card {
+      border: 1px solid rgba(244,234,220,.16);
+      padding: 28px;
+      min-height: 280px;
+    }
+    .visit-card h3 {
+      letter-spacing: 0.22em;
+      font-size: 12px;
+      color: var(--mango);
+      margin-bottom: 16px;
+    }
+    .visit-card p { font-size: 22px; line-height: 1.4; }
+    .hours li {
+      list-style: none;
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(244,234,220,.1);
+      font-size: 14px;
+    }
+
+    /* SHOT 07 end card */
+    #s07 {
+      background: var(--acai-deep);
+      text-align: center;
+    }
+    #s07 h2 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(48px, 10vw, 120px);
+      line-height: 0.9;
+    }
+    #s07 p { margin: 18px auto 32px; color: var(--mute); }
+    a.cta { text-decoration: none; display: inline-block; }
+
+    footer.credits {
+      padding: 28px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      color: var(--mute);
+      border-top: 1px solid rgba(244,234,220,.08);
+    }
+
+    @media (max-width: 860px) {
+      #s02, #s06 { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr 1fr; }
+      .shot-tag { left: 20px; }
+      .topbar { padding: 14px 16px; grid-template-columns: auto 1fr auto; }
+      .reel { display: none; }
+      .facade { min-height: 320px; }
+      .slate { top: auto; bottom: 12px; right: 12px; left: 12px; width: auto; }
+    }
+  </style>
 </head>
-<body>
-    <h1>Mono acai</h1>
+<body class="directing">
+  <div class="grain" aria-hidden="true"></div>
+  <div class="timeline" id="timeline"></div>
+
+  <header class="topbar">
+    <div class="brand">MONO</div>
+    <nav class="reel" aria-label="Szenen">
+      <a href="#s01" data-shot="1" class="active">01</a>
+      <a href="#s02" data-shot="2">02</a>
+      <a href="#s03" data-shot="3">03</a>
+      <a href="#s04" data-shot="4">04</a>
+      <a href="#s05" data-shot="5">05</a>
+      <a href="#s06" data-shot="6">06</a>
+      <a href="#s07" data-shot="7">07</a>
+    </nav>
+    <div class="top-actions">
+      <button class="chip on" id="regieBtn" type="button" aria-pressed="true">Regie</button>
+    </div>
+  </header>
+
+  <aside class="slate" id="slate" aria-label="Режиссура">
+    <kbd id="slateKbd">SHOT 01 · TITLE</kbd>
+    <h2 id="slateTitle">Титульная карточка</h2>
+    <p id="slateBody">Город ещё не виден. Только имя и обещание: одно блюдо, без шума меню.</p>
+    <div class="beat">
+      <p><strong style="color:var(--cream);font-weight:600">Задача кадра</strong></p>
+      <ul id="slateNotes">
+        <li>Камера статична, как плакат в витрине.</li>
+        <li>Тишина → затем лёгкий уличный шум Везеля.</li>
+        <li>Цвет: ночной асаи, вспышка манго в кернинге.</li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="stage">
+    <section class="shot" id="s01" data-dir="title">
+      <span class="shot-tag">Szene 01 · Titel</span>
+      <div class="title-card">
+        <p class="eyebrow">Wesel · Viehtor</p>
+        <h1>MONO<em>nur açaí.</em></h1>
+        <p class="logline">Ein Produkt. Eine Schale. Innenstadt Wesel — wo der Foodtrend aus den Großstädten endlich ankommt, ohne das Menü aufzublähen.</p>
+      </div>
+    </section>
+
+    <section class="shot" id="s02" data-dir="arrival">
+      <span class="shot-tag">Szene 02 · Ankunft</span>
+      <div class="copy">
+        <h2 class="display">Am Viehtor<br />öffnet sich nur eins.</h2>
+        <p>Kein Café-Allerlei. MONO steht für das Mono-Konzept: Açaí-Bowls, dickflüssig, kalt, selbst zusammengestellt. Brasilianische Beere, niederrheinische Adresse.</p>
+        <div class="meta-row">
+          <div><b>Ort</b><span>Viehtor 3, 46483 Wesel</span></div>
+          <div><b>Öffnung</b><span>Mo–Sa 11:00–18:00</span></div>
+        </div>
+      </div>
+      <div class="facade" aria-hidden="true">
+        <div class="window"></div>
+        <div class="sign">MONO</div>
+      </div>
+    </section>
+
+    <section class="shot" id="s03" data-dir="product">
+      <span class="shot-tag">Szene 03 · Produkt</span>
+      <div class="bowl-hero">
+        <div class="orbit"></div>
+        <div class="bowl" role="img" aria-label="Açaí-Bowl mit Toppings"></div>
+        <p class="caption">Close-up · Textur vor Logo</p>
+      </div>
+    </section>
+
+    <section class="shot" id="s04" data-dir="ritual">
+      <span class="shot-tag">Szene 04 · Ritual</span>
+      <div class="ritual">
+        <h2 class="display">Baue deine Bowl.</h2>
+        <p>Basis ab 11,90 €. Danach Toppings — jedes ein Schnitt, keine Zutat zu viel. Klick, um die Schale zu führen. Das ist die Handlung des Gastes.</p>
+        <div class="grid" id="toppings"></div>
+        <div class="build-bar">
+          <div>
+            <div style="letter-spacing:.2em;font-size:11px;text-transform:uppercase;opacity:.6">Deine Bowl</div>
+            <div class="price" id="price">11,90 €</div>
+          </div>
+          <button class="cta" type="button" id="orderBtn">Zur Theke</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="shot" id="s05" data-dir="line">
+      <span class="shot-tag">Szene 05 · Satz</span>
+      <div>
+        <blockquote>„Wir werden davon süchtig.“</blockquote>
+        <p class="cite">Wesel hat den Satz schon ausgesprochen. Wir halten ihn.</p>
+      </div>
+    </section>
+
+    <section class="shot" id="s06" data-dir="visit">
+      <span class="shot-tag">Szene 06 · Kommen</span>
+      <article class="visit-card">
+        <h3>Adresse</h3>
+        <p>Viehtor 3<br />46483 Wesel<br />Innenstadt</p>
+      </article>
+      <article class="visit-card">
+        <h3>Stunden</h3>
+        <ul class="hours">
+          <li><span>Montag–Freitag</span><span>11:00–18:00</span></li>
+          <li><span>Samstag</span><span>11:00–18:00</span></li>
+          <li><span>Sonntag</span><span>geschlossen</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="shot" id="s07" data-dir="end">
+      <span class="shot-tag">Szene 07 · Abspann</span>
+      <div>
+        <h2>Eins.<br />Aber richtig.</h2>
+        <p>MONO Açaí · Wesel. Kein Delivery-Epos. Ein Laden, eine Schale, heute.</p>
+        <a class="cta" href="#s04">Bowl wählen</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="credits">
+    <span>MONO · Maket / Regiebuch</span>
+    <span>7 Szenen · Farbe Açaí / Mango / Pistazie</span>
+    <span>Wesel 2026</span>
+  </footer>
+
+  <script>
+    const DIR = {
+      title: {
+        kbd: "SHOT 01 · TITLE",
+        title: "Титульная карточка",
+        body: "Город ещё не виден. Только имя и обещание: одно блюдо, без шума меню.",
+        notes: [
+          "Камера статична, как плакат в витрине.",
+          "Тишина → затем лёгкий уличный шум Везеля.",
+          "Цвет: ночной асаи, вспышка манго в кернинге."
+        ]
+      },
+      arrival: {
+        kbd: "SHOT 02 · ARRIVAL",
+        title: "Приход на Viehtor",
+        body: "Герой — не бренд, а улица. Витрина как портал: тёплое окно в фиолетовой ночи.",
+        notes: [
+          "Средний план фасада, затем наезд на вывеску MONO.",
+          "Текст слева читается как диктор за кадром.",
+          "Адрес и часы — титры, не меню."
+        ]
+      },
+      product: {
+        kbd: "SHOT 03 · HERO",
+        title: "Крупный план чаши",
+        body: "Продукт занимает весь кадр. Топпинги — планеты на орбите, не каталог.",
+        notes: [
+          "Макро: зернистость пюре важнее логотипа.",
+          "Медленное вращение, без сток-фото улыбок.",
+          "Звук: лёд, ложка, короткое дыхание."
+        ]
+      },
+      ritual: {
+        kbd: "SHOT 04 · RITUAL",
+        title: "Гость как режиссёр",
+        body: "Светлеет. Действие переходит зрителю: собрать bowl — и есть сюжет.",
+        notes: [
+          "Светлая сцена после трёх тёмных: глоток воздуха.",
+          "Каждый топпинг = один жест руки.",
+          "Цена растёт как саундтрек, не как чек."
+        ]
+      },
+      line: {
+        kbd: "SHOT 05 · LINE",
+        title: "Единственная реплика",
+        body: "Цитата города. Не слоган агентства — чужая фраза, которую бренд держит.",
+        notes: [
+          "Чёрный экран / ягодный залив.",
+          "Курсив, как шёпот, не как биллборд.",
+          "Пауза после точки. Не перебивать CTA."
+        ]
+      },
+      visit: {
+        kbd: "SHOT 06 · VISIT",
+        title: "Практический план",
+        body: "После поэзии — карта тела: куда идти, когда открыто.",
+        notes: [
+          "Две карточки, как два кадра split-screen.",
+          "Без карты Google: адрес звучит как стих.",
+          "Воскресенье закрыто — тоже характер."
+        ]
+      },
+      end: {
+        kbd: "SHOT 07 · END CARD",
+        title: "Конец = приглашение",
+        body: "Не «узнайте больше». Возврат к чаше. Фильм заканчивается за стойкой.",
+        notes: [
+          "Крупная типографика, мало слов.",
+          "Кнопка ведёт в ритуал, не во внешнюю ссылку.",
+          "Титры внизу — продакшн, не SEO."
+        ]
+      }
+    };
+
+    const toppings = [
+      { id: "granola", name: "Granola", note: "Crunch", color: "#c47a3a", extra: 0 },
+      { id: "banana", name: "Banane", note: "Weich", color: "#f2b84b", extra: 0.8 },
+      { id: "strawberry", name: "Erdbeere", note: "Säure", color: "#c23b5e", extra: 1.2 },
+      { id: "kiwi", name: "Kiwi", note: "Frisch", color: "#8fbf5a", extra: 1.0 },
+      { id: "coconut", name: "Kokos", note: "Weiß", color: "#efe6d6", extra: 0.9 },
+      { id: "peanut", name: "Erdnuss", note: "Salz", color: "#d9a066", extra: 1.1 },
+      { id: "cacao", name: "Cacao nibs", note: "Bitter", color: "#4a2a22", extra: 1.4 },
+      { id: "honey", name: "Honig", note: "Glanz", color: "#e8c04a", extra: 0.6 }
+    ];
+
+    const selected = new Set(["granola"]);
+    const grid = document.getElementById("toppings");
+    const priceEl = document.getElementById("price");
+
+    function renderToppings() {
+      grid.innerHTML = toppings.map((t) => `
+        <button class="topping ${selected.has(t.id) ? "selected" : ""}" type="button" data-id="${t.id}">
+          <div class="dot" style="background:${t.color};border:1px solid rgba(0,0,0,.08)"></div>
+          <strong>${t.name}</strong>
+          <small>${t.note}${t.extra ? " · +" + t.extra.toFixed(2).replace(".", ",") + " €" : " · in der Basis"}</small>
+        </button>
+      `).join("");
+      let total = 11.9;
+      toppings.forEach((t) => { if (selected.has(t.id)) total += t.extra; });
+      priceEl.textContent = total.toFixed(2).replace(".", ",") + " €";
+    }
+
+    grid.addEventListener("click", (e) => {
+      const btn = e.target.closest(".topping");
+      if (!btn) return;
+      const id = btn.dataset.id;
+      if (selected.has(id)) selected.delete(id); else selected.add(id);
+      renderToppings();
+    });
+    renderToppings();
+
+    document.getElementById("orderBtn").addEventListener("click", () => {
+      document.getElementById("orderBtn").textContent = "Bereit an der Theke";
+    });
+
+    const slateKbd = document.getElementById("slateKbd");
+    const slateTitle = document.getElementById("slateTitle");
+    const slateBody = document.getElementById("slateBody");
+    const slateNotes = document.getElementById("slateNotes");
+    const reelLinks = [...document.querySelectorAll(".reel a")];
+
+    function applyDir(key, shotNum) {
+      const d = DIR[key];
+      if (!d) return;
+      slateKbd.textContent = d.kbd;
+      slateTitle.textContent = d.title;
+      slateBody.textContent = d.body;
+      slateNotes.innerHTML = d.notes.map((n) => `<li>${n}</li>`).join("");
+      reelLinks.forEach((a) => a.classList.toggle("active", a.dataset.shot === String(shotNum)));
+    }
+
+    const shots = [...document.querySelectorAll("section.shot")];
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        const i = shots.indexOf(en.target) + 1;
+        applyDir(en.target.dataset.dir, i);
+      });
+    }, { threshold: 0.55 });
+    shots.forEach((s) => io.observe(s));
+
+    const timeline = document.getElementById("timeline");
+    window.addEventListener("scroll", () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      timeline.style.width = (max > 0 ? (window.scrollY / max) * 100 : 0) + "%";
+    });
+
+    const regieBtn = document.getElementById("regieBtn");
+    regieBtn.addEventListener("click", () => {
+      const on = document.body.classList.toggle("directing");
+      regieBtn.classList.toggle("on", on);
+      regieBtn.setAttribute("aria-pressed", String(on));
+    });
+  </script>
 </body>
 </html>
