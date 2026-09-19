@@ -1,11 +1,139 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MONO — Açaí in Wesel · Maket mit Regie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Syne:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-<body>
-    <h1>Mono acai</h1>
+<body class="directing">
+  <div class="grain" aria-hidden="true"></div>
+  <div class="timeline" id="timeline"></div>
+
+  <header class="topbar">
+    <div class="brand">MONO</div>
+    <nav class="reel" aria-label="Szenen">
+      <a href="#s01" data-shot="1" class="active">01</a>
+      <a href="#s02" data-shot="2">02</a>
+      <a href="#s03" data-shot="3">03</a>
+      <a href="#s04" data-shot="4">04</a>
+      <a href="#s05" data-shot="5">05</a>
+      <a href="#s06" data-shot="6">06</a>
+      <a href="#s07" data-shot="7">07</a>
+    </nav>
+    <div class="top-actions">
+      <button class="chip on" id="regieBtn" type="button" aria-pressed="true">Regie</button>
+    </div>
+  </header>
+
+  <aside class="slate" id="slate" aria-label="Режиссура">
+    <kbd id="slateKbd">SHOT 01 · TITLE</kbd>
+    <h2 id="slateTitle">Титульная карточка</h2>
+    <p id="slateBody">Город ещё не виден. Только имя и обещание: одно блюдо, без шума меню.</p>
+    <div class="beat">
+      <p><strong class="slate-task">Задача кадра</strong></p>
+      <ul id="slateNotes">
+        <li>Камера статична, как плакат в витрине.</li>
+        <li>Тишина → затем лёгкий уличный шум Везеля.</li>
+        <li>Цвет: ночной асаи, вспышка манго в кернинге.</li>
+      </ul>
+    </div>
+  </aside>
+
+  <main class="stage">
+    <section class="shot" id="s01" data-dir="title">
+      <span class="shot-tag">Szene 01 · Titel</span>
+      <div class="title-card">
+        <p class="eyebrow">Wesel · Viehtor</p>
+        <h1>MONO<em>nur açaí.</em></h1>
+        <p class="logline">Ein Produkt. Eine Schale. Innenstadt Wesel — wo der Foodtrend aus den Großstädten endlich ankommt, ohne das Menü aufzublähen.</p>
+      </div>
+    </section>
+
+    <section class="shot" id="s02" data-dir="arrival">
+      <span class="shot-tag">Szene 02 · Ankunft</span>
+      <div class="copy">
+        <h2 class="display">Am Viehtor<br />öffnet sich nur eins.</h2>
+        <p>Kein Café-Allerlei. MONO steht für das Mono-Konzept: Açaí-Bowls, dickflüssig, kalt, selbst zusammengestellt. Brasilianische Beere, niederrheinische Adresse.</p>
+        <div class="meta-row">
+          <div><b>Ort</b><span>Viehtor 3, 46483 Wesel</span></div>
+          <div><b>Öffnung</b><span>Mo–Sa 11:00–18:00</span></div>
+        </div>
+      </div>
+      <div class="facade" aria-hidden="true">
+        <div class="window"></div>
+        <div class="sign">MONO</div>
+      </div>
+    </section>
+
+    <section class="shot" id="s03" data-dir="product">
+      <span class="shot-tag">Szene 03 · Produkt</span>
+      <div class="bowl-hero">
+        <div class="orbit"></div>
+        <div class="bowl" role="img" aria-label="Açaí-Bowl mit Toppings"></div>
+        <p class="caption">Close-up · Textur vor Logo</p>
+      </div>
+    </section>
+
+    <section class="shot" id="s04" data-dir="ritual">
+      <span class="shot-tag">Szene 04 · Ritual</span>
+      <div class="ritual">
+        <h2 class="display">Baue deine Bowl.</h2>
+        <p>Basis ab 11,90 €. Danach Toppings — jedes ein Schnitt, keine Zutat zu viel. Klick, um die Schale zu führen. Das ist die Handlung des Gastes.</p>
+        <div class="grid" id="toppings"></div>
+        <div class="build-bar">
+          <div>
+            <div class="bowl-kicker">Deine Bowl</div>
+            <div class="price" id="price">11,90 €</div>
+          </div>
+          <button class="cta" type="button" id="orderBtn">Zur Theke</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="shot" id="s05" data-dir="line">
+      <span class="shot-tag">Szene 05 · Satz</span>
+      <div>
+        <blockquote>„Wir werden davon süchtig.“</blockquote>
+        <p class="cite">Wesel hat den Satz schon ausgesprochen. Wir halten ihn.</p>
+      </div>
+    </section>
+
+    <section class="shot" id="s06" data-dir="visit">
+      <span class="shot-tag">Szene 06 · Kommen</span>
+      <article class="visit-card">
+        <h3>Adresse</h3>
+        <p>Viehtor 3<br />46483 Wesel<br />Innenstadt</p>
+      </article>
+      <article class="visit-card">
+        <h3>Stunden</h3>
+        <ul class="hours">
+          <li><span>Montag–Freitag</span><span>11:00–18:00</span></li>
+          <li><span>Samstag</span><span>11:00–18:00</span></li>
+          <li><span>Sonntag</span><span>geschlossen</span></li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="shot" id="s07" data-dir="end">
+      <span class="shot-tag">Szene 07 · Abspann</span>
+      <div>
+        <h2>Eins.<br />Aber richtig.</h2>
+        <p>MONO Açaí · Wesel. Kein Delivery-Epos. Ein Laden, eine Schale, heute.</p>
+        <a class="cta" href="#s04">Bowl wählen</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="credits">
+    <span>MONO · Maket / Regiebuch</span>
+    <span>7 Szenen · Farbe Açaí / Mango / Pistazie</span>
+    <span>Wesel 2026</span>
+  </footer>
+
+  <script src="js/main.js"></script>
 </body>
 </html>
